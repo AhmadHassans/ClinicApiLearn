@@ -58,13 +58,15 @@ builder.Services.AddAuthorization(options =>
     }
 });
 
-// ===== 5. CONTROLLERS =====
+//  5. CONTROLLERS
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
-// ===== PIPELINE =====
+app.UseMiddleware<ClinicApiLearn.Middleware.GlobalExceptionMiddleware>();
+
+//  PIPELINE 
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();

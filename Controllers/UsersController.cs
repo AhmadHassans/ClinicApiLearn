@@ -3,6 +3,7 @@ using ClinicApiLearn.DTOs;
 using ClinicApiLearn.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace ClinicApiLearn.Controllers;
 
@@ -26,9 +27,11 @@ public class UsersController : ControllerBase
     }
 
     [HttpPut("{id}/role")]
+   
     public async Task<IActionResult> UpdateRole(int id, UpdateUserRoleDto dto)
     {
-        var user = await _userService.UpdateRoleAsync(id, dto.RoleId);
+        var currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var user = await _userService.UpdateRoleAsync(id, dto.RoleId, currentUserId);
         if (user == null)
         {
             return NotFound(new { message = "User or role not found." });

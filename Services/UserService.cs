@@ -3,7 +3,7 @@ using ClinicApiLearn.DTOs;
 using ClinicApiLearn.Interfaces;
 using ClinicApiLearn.Models;
 using Microsoft.EntityFrameworkCore;
-
+using ClinicApiLearn.Exceptions;
 namespace ClinicApiLearn.Services;
 
 public class UserService : IUserService
@@ -26,8 +26,12 @@ public class UserService : IUserService
         return users.Select(ToDto).ToList();
     }
 
-    public async Task<UserResponseDto?> UpdateRoleAsync(int userId, int roleId)
+    public async Task<UserResponseDto?> UpdateRoleAsync(int userId, int roleId,int currentUserId)
     {
+          if (userId == currentUserId)
+        {
+            throw new BusinessRuleException("You cannot change your own role.");
+        }
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
         var role = await _context.Roles.FindAsync(roleId);
 
