@@ -30,13 +30,15 @@ public class AppointmentService : IAppointmentService
 
         return appointment == null ? null : ToDto(appointment);
     }
-    public async Task<AppointmentResponseDto> CreateAsync(CreateAppointmentDto dto)
+
+    public async Task<AppointmentResponseDto> CreateAsync(CreateAppointmentDto dto, int userId)
     {
         var appointment = new Appointment
         {
             PatientName = dto.PatientName,
             Reason = dto.Reason,
-            AppointmentDate = dto.AppointmentDate.ToUniversalTime()
+            AppointmentDate = dto.AppointmentDate.ToUniversalTime(),
+            CreatedByUserId = userId   
         };
 
         _context.Appointments.Add(appointment);
@@ -74,6 +76,21 @@ public class AppointmentService : IAppointmentService
         await _context.SaveChangesAsync();
 
         return true;
+    }
+
+   
+    public async Task<AppointmentResponseDto?> WritePrescriptionAsync(int id, string prescription)
+    {
+        var appointment = await _context.Appointments.FindAsync(id);
+        if (appointment == null)
+        {
+            return null;
+        }
+
+        appointment.Prescription = prescription;
+        await _context.SaveChangesAsync();
+
+        return ToDto(appointment);
     }
 
     private static AppointmentResponseDto ToDto(Appointment a)
