@@ -6,4 +6,7 @@ public class Appointment:BaseEntity
     public string Reason{ get; set; } =string.Empty;
     public DateTime AppointmentDate { get; set; } 
     public string? Prescription { get; set; }
+
+    public int? CreatedByUserId { get; set; }
+    public User? CreatedByUser { get; set; }
 }
