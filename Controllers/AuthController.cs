@@ -9,6 +9,7 @@ namespace ClinicApiLearn.Controllers;
 public class AuthController : ControllerBase
 {
     private const string AccessTokenCookie = "access_token";
+    private const string RefreshTokenCookie = "refresh_token";   
 
     private readonly IAuthService _authService;
     private readonly IConfiguration _config;
@@ -40,16 +41,74 @@ public class AuthController : ControllerBase
             return Unauthorized(new { message = "Invalid email or password." });
         }
 
-        var minutes = _config.GetValue<int>("Jwt:AccessTokenMinutes");
+        SetAuthCookies(result);
+        return Ok(result.User);
+    }
 
-        Response.Cookies.Append(AccessTokenCookie, result.AccessToken, new CookieOptions
+  
+    [HttpPost("refresh")]
+    public async Task<IActionResult> Refresh()
+    {
+        var refreshToken = Request.Cookies[RefreshTokenCookie];
+        if (string.IsNullOrEmpty(refreshToken))
+        {
+            return Unauthorized(new { message = "No refresh token." });
+        }
+
+        var result = await _authService.RefreshAsync(refreshToken);
+        if (result == null)
+        {
+            ClearAuthCookies();
+            return Unauthorized(new { message = "Session expired. Please login again." });
+        }
+
+        SetAuthCookies(result);
+        return Ok(result.User);
+    }
+
+   
+    [HttpPost("logout")]
+    public async Task<IActionResult> Logout()
+    {
+        var refreshToken = Request.Cookies[RefreshTokenCookie];
+        if (!string.IsNullOrEmpty(refreshToken))
+        {
+            await _authService.LogoutAsync(refreshToken);
+        }
+
+        ClearAuthCookies();
+        return NoContent();
+    }
+
+   
+    private void SetAuthCookies(LoginResultDto result)
+    {
+        var minutes = _config.GetValue<int>("Jwt:AccessTokenMinutes");
+        var days = _config.GetValue<int>("Jwt:RefreshTokenDays");
+
+        Response.Cookies.Append(AccessTokenCookie, result.AccessToken,
+            BuildCookieOptions(DateTimeOffset.UtcNow.AddMinutes(minutes), "/"));
+
+        Response.Cookies.Append(RefreshTokenCookie, result.RefreshToken,
+            BuildCookieOptions(DateTimeOffset.UtcNow.AddDays(days), "/api/auth"));
+    }
+
+    
+    private void ClearAuthCookies()
+    {
+        Response.Cookies.Delete(AccessTokenCookie, BuildCookieOptions(null, "/"));
+        Response.Cookies.Delete(RefreshTokenCookie, BuildCookieOptions(null, "/api/auth"));
+    }
+
+    private static CookieOptions BuildCookieOptions(DateTimeOffset? expires, string path)
+    {
+        return new CookieOptions
         {
             HttpOnly = true,
             Secure = true,
             SameSite = SameSiteMode.Strict,
-            Expires = DateTimeOffset.UtcNow.AddMinutes(minutes)
-        });
-
-        return Ok(result.User);
+            Expires = expires,
+            Path = path
+        };
     }
 }

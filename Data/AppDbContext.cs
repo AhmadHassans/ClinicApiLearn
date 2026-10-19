@@ -9,9 +9,10 @@ public class AppDbContext : DbContext
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }// connecting string add from program.cs in :base(optioons)
     public DbSet<Appointment> Appointments => Set<Appointment>();
     public DbSet<User> Users => Set<User>();                              
-    public DbSet<Role> Roles => Set<Role>();                               // NAYA
-    public DbSet<Permission> Permissions => Set<Permission>();             // NAYA
-    public DbSet<RolePermission> RolePermissions => Set<RolePermission>(); // NAYA
+    public DbSet<Role> Roles => Set<Role>();                               
+    public DbSet<Permission> Permissions => Set<Permission>();             
+    public DbSet<RolePermission> RolePermissions => Set<RolePermission>(); 
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
    // understanding logic for ef core
         protected override void OnModelCreating(ModelBuilder modelBuilder)
