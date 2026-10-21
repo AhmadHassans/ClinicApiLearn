@@ -53,6 +53,8 @@ namespace ClinicApiLearn.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AppointmentDate");
+
                     b.HasIndex("CreatedByUserId");
 
                     b.ToTable("Appointments");
@@ -157,6 +159,9 @@ namespace ClinicApiLearn.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("TokenHash")
+                        .IsUnique();
+
                     b.HasIndex("UserId");
 
                     b.ToTable("RefreshTokens");
@@ -179,6 +184,9 @@ namespace ClinicApiLearn.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("Roles");
 
@@ -344,6 +352,9 @@ namespace ClinicApiLearn.Migrations
                         .IsUnique();
 
                     b.HasIndex("RoleId");
+
+                    b.HasIndex("Username")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });

@@ -23,18 +23,23 @@ public class AuthService : IAuthService
 
     public async Task<UserResponseDto> RegisterAsync(RegisterDto dto)
     {
-        var email = dto.Email.Trim().ToLowerInvariant();
+               var email = dto.Email.Trim().ToLowerInvariant();
+        var username = dto.Username.Trim();
 
         if (await _context.Users.AnyAsync(u => u.Email == email))
         {
-           throw new InvalidOperationException("Email already registered.");
+            throw new InvalidOperationException("Email already registered.");
         }
 
+        if (await _context.Users.AnyAsync(u => u.Username == username))
+        {
+            throw new InvalidOperationException("Username already taken.");
+        }
         var role = await _context.Roles.FindAsync(DefaultRoleId);
 
         var user = new User
         {
-            Username = dto.Username.Trim(),
+            Username = username,
             Email = email,
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
             Role = role!

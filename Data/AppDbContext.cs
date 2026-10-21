@@ -35,6 +35,26 @@ public class AppDbContext : DbContext
             .HasIndex(p => p.Code)
             .IsUnique();
 
+
+        // username bhi sirf ek dafa
+        modelBuilder.Entity<User>()
+            .HasIndex(u => u.Username)
+            .IsUnique();
+
+      
+        modelBuilder.Entity<Role>()
+            .HasIndex(r => r.Name)
+            .IsUnique();
+
+       
+        modelBuilder.Entity<RefreshToken>()
+            .HasIndex(t => t.TokenHash)
+            .IsUnique();
+
+        
+        modelBuilder.Entity<Appointment>()
+            .HasIndex(a => a.AppointmentDate);
+
         modelBuilder.Entity<User>()
             .HasOne(u => u.Role)
             .WithMany(r => r.Users)
