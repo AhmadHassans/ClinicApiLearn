@@ -1,18 +1,17 @@
-﻿using ClinicApiLearn.Data;
+﻿using ClinicApiLearn.Constants;
+using ClinicApiLearn.Data;
 using ClinicApiLearn.DTOs;
 using ClinicApiLearn.Interfaces;
 using ClinicApiLearn.Models;
 using Microsoft.EntityFrameworkCore;
-using ClinicApiLearn.Constants;
+
 namespace ClinicApiLearn.Services;
 
 public class AuthService : IAuthService
 {
-   private static readonly Guid DefaultRoleId = RoleIds.Receptionist;
-
     private readonly AppDbContext _context;
     private readonly ITokenService _tokenService;
-    private readonly IConfiguration _config;   
+    private readonly IConfiguration _config;
 
     public AuthService(AppDbContext context, ITokenService tokenService, IConfiguration config)
     {
@@ -23,7 +22,7 @@ public class AuthService : IAuthService
 
     public async Task<UserResponseDto> RegisterAsync(RegisterDto dto)
     {
-               var email = dto.Email.Trim().ToLowerInvariant();
+        var email = dto.Email.Trim().ToLowerInvariant();
         var username = dto.Username.Trim();
 
         if (await _context.Users.AnyAsync(u => u.Email == email))
@@ -35,14 +34,25 @@ public class AuthService : IAuthService
         {
             throw new InvalidOperationException("Username already taken.");
         }
-        var role = await _context.Roles.FindAsync(DefaultRoleId);
+
+        // super admin sirf seed se banta hai, koi register se nahi bana sakta
+        if (dto.RoleId == RoleIds.SuperAdmin)
+        {
+            throw new InvalidOperationException("Super admin role cannot be assigned.");
+        }
+
+        var role = await _context.Roles.FindAsync(dto.RoleId);
+        if (role == null)
+        {
+            throw new KeyNotFoundException("Role not found.");
+        }
 
         var user = new User
         {
             Username = username,
             Email = email,
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
-            Role = role!
+            Role = role
         };
 
         _context.Users.Add(user);
@@ -51,7 +61,7 @@ public class AuthService : IAuthService
         return ToDto(user);
     }
 
-    public async Task<LoginResultDto> LoginAsync(LoginDto dto)
+    public async Task<LoginResultDto> LoginAsync(LoginDto dto, string? ipAddress, string? userAgent)
     {
         var email = dto.Email.Trim().ToLowerInvariant();
 
@@ -60,41 +70,62 @@ public class AuthService : IAuthService
 
         if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
         {
-          throw new UnauthorizedAccessException("Invalid email or password.");
+            throw new UnauthorizedAccessException("Invalid email or password.");
         }
 
-        return await IssueTokensAsync(user);
+        // har login = ek naya session
+        var refreshToken = _tokenService.CreateRefreshToken();
+        var now = DateTime.UtcNow;
+
+        _context.UserSessions.Add(new UserSession
+        {
+            TokenHash = _tokenService.HashToken(refreshToken),
+            ExpiresAt = now.AddDays(RefreshTokenDays()),
+            LastUsedAt = now,
+            IpAddress = ipAddress,
+            UserAgent = userAgent,
+            UserId = user.Id
+        });
+        await _context.SaveChangesAsync();
+
+        return BuildResult(user, refreshToken);
     }
 
-  
-    public async Task<LoginResultDto> RefreshAsync(string refreshToken)
+    public async Task<LoginResultDto> RefreshAsync(string refreshToken, string? ipAddress, string? userAgent)
     {
         var hash = _tokenService.HashToken(refreshToken);
-        var stored = await _context.RefreshTokens.FirstOrDefaultAsync(t => t.TokenHash == hash);
+        var session = await _context.UserSessions.FirstOrDefaultAsync(s => s.TokenHash == hash);
 
-        // expired
-        if (stored == null || stored.RevokedAt != null || stored.ExpiresAt <= DateTime.UtcNow)
+        // na mila, logout ho chuka, ya expire
+        if (session == null || session.RevokedAt != null || session.ExpiresAt <= DateTime.UtcNow)
         {
             throw new UnauthorizedAccessException("Session expired. Please login again.");
         }
 
-   
-        stored.RevokedAt = DateTime.UtcNow;
+        // rotation: wahi session, naya token (purana token ab kaam nahi karega)
+        var newRefreshToken = _tokenService.CreateRefreshToken();
+        var now = DateTime.UtcNow;
 
-        var user = await UsersWithPermissions().FirstAsync(u => u.Id == stored.UserId);
-        return await IssueTokensAsync(user);
+        session.TokenHash = _tokenService.HashToken(newRefreshToken);
+        session.ExpiresAt = now.AddDays(RefreshTokenDays());
+        session.LastUsedAt = now;
+        session.IpAddress = ipAddress;
+        session.UserAgent = userAgent;
+        await _context.SaveChangesAsync();
+
+        var user = await UsersWithPermissions().FirstAsync(u => u.Id == session.UserId);
+        return BuildResult(user, newRefreshToken);
     }
 
-    
     public async Task LogoutAsync(string refreshToken)
     {
         var hash = _tokenService.HashToken(refreshToken);
-        var stored = await _context.RefreshTokens
-            .FirstOrDefaultAsync(t => t.TokenHash == hash && t.RevokedAt == null);
+        var session = await _context.UserSessions
+            .FirstOrDefaultAsync(s => s.TokenHash == hash && s.RevokedAt == null);
 
-        if (stored != null)
+        if (session != null)
         {
-            stored.RevokedAt = DateTime.UtcNow;
+            session.RevokedAt = DateTime.UtcNow;
             await _context.SaveChangesAsync();
         }
     }
@@ -107,20 +138,13 @@ public class AuthService : IAuthService
                     .ThenInclude(rp => rp.Permission);
     }
 
-    
-    private async Task<LoginResultDto> IssueTokensAsync(User user)
+    private int RefreshTokenDays()
     {
-        var refreshToken = _tokenService.CreateRefreshToken();
-        var days = _config.GetValue<int>("Jwt:RefreshTokenDays");
+        return _config.GetValue<int>("Jwt:RefreshTokenDays");
+    }
 
-        _context.RefreshTokens.Add(new RefreshToken
-        {
-            TokenHash = _tokenService.HashToken(refreshToken),
-            ExpiresAt = DateTime.UtcNow.AddDays(days),
-            UserId = user.Id
-        });
-        await _context.SaveChangesAsync();
-
+    private LoginResultDto BuildResult(User user, string refreshToken)
+    {
         return new LoginResultDto
         {
             User = ToDto(user),

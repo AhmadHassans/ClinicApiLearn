@@ -132,41 +132,6 @@ namespace ClinicApiLearn.Migrations
                         });
                 });
 
-            modelBuilder.Entity("ClinicApiLearn.Models.RefreshToken", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("ExpiresAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime?>("RevokedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("TokenHash")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TokenHash")
-                        .IsUnique();
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("RefreshTokens");
-                });
-
             modelBuilder.Entity("ClinicApiLearn.Models.Role", b =>
                 {
                     b.Property<Guid>("Id")
@@ -359,6 +324,50 @@ namespace ClinicApiLearn.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("ClinicApiLearn.Models.UserSession", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("IpAddress")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("LastUsedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("RevokedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("TokenHash")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UserAgent")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TokenHash")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserSessions");
+                });
+
             modelBuilder.Entity("ClinicApiLearn.Models.Appointment", b =>
                 {
                     b.HasOne("ClinicApiLearn.Models.User", "CreatedByUser")
@@ -367,17 +376,6 @@ namespace ClinicApiLearn.Migrations
                         .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("CreatedByUser");
-                });
-
-            modelBuilder.Entity("ClinicApiLearn.Models.RefreshToken", b =>
-                {
-                    b.HasOne("ClinicApiLearn.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ClinicApiLearn.Models.RolePermission", b =>
@@ -408,6 +406,17 @@ namespace ClinicApiLearn.Migrations
                         .IsRequired();
 
                     b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("ClinicApiLearn.Models.UserSession", b =>
+                {
+                    b.HasOne("ClinicApiLearn.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ClinicApiLearn.Models.Permission", b =>

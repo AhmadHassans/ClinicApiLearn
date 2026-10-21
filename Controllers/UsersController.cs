@@ -8,7 +8,7 @@ using System.Security.Claims;
 namespace ClinicApiLearn.Controllers;
 
 [ApiController]
-[Route("api/users")]
+[Route(ApiRoutes.Users)]
 [Authorize(Policy = PermissionCodes.UserManage)]
 public class UsersController : ControllerBase
 {

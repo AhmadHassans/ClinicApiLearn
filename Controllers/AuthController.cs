@@ -1,11 +1,13 @@
 using ClinicApiLearn.DTOs;
 using ClinicApiLearn.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ClinicApiLearn.Constants;
 
 namespace ClinicApiLearn.Controllers;
 
 [ApiController]
-[Route("api/auth")]
+[Route(ApiRoutes.Auth)]
 public class AuthController : ControllerBase
 {
     private const string AccessTokenCookie = "access_token";
@@ -21,6 +23,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("register")]
+     [Authorize(Policy = PermissionCodes.UserManage)] 
     public async Task<IActionResult> Register(RegisterDto dto)
     {
         var user = await _authService.RegisterAsync(dto);
@@ -30,7 +33,8 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login(LoginDto dto)
     {
-        var result = await _authService.LoginAsync(dto);
+       var result = await _authService.LoginAsync(dto, ClientIp(), ClientUserAgent());
+
        
         SetAuthCookies(result);
         return Ok(result.User);
@@ -48,7 +52,7 @@ public class AuthController : ControllerBase
 
       try
         {
-            var result = await _authService.RefreshAsync(refreshToken);
+            var result = await _authService.RefreshAsync(refreshToken, ClientIp(), ClientUserAgent());
             SetAuthCookies(result);
             return Ok(result.User);
         }
@@ -106,4 +110,8 @@ public class AuthController : ControllerBase
             Path = path
         };
     }
+     private string? ClientIp() => HttpContext.Connection.RemoteIpAddress?.ToString();
+
+   
+    private string? ClientUserAgent() => Request.Headers.UserAgent.ToString();
 }

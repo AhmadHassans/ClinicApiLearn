@@ -19,7 +19,8 @@ builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IUserService, UserService>();
-
+builder.Services.AddScoped<IPermissionService, PermissionService>();
+builder.Services.AddScoped<IRoleService, RoleService>();
 // jwt token authentication
 var jwtKey = builder.Configuration["Jwt:Key"]
     ?? throw new InvalidOperationException("Jwt:Key is missing.");

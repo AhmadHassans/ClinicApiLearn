@@ -15,7 +15,7 @@ public class AppDbContext : DbContext
     public DbSet<Role> Roles => Set<Role>();
     public DbSet<Permission> Permissions => Set<Permission>();
     public DbSet<RolePermission> RolePermissions => Set<RolePermission>();
-    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+    public DbSet<UserSession> UserSessions => Set<UserSession>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -47,7 +47,7 @@ public class AppDbContext : DbContext
             .IsUnique();
 
        
-        modelBuilder.Entity<RefreshToken>()
+        modelBuilder.Entity<UserSession>()
             .HasIndex(t => t.TokenHash)
             .IsUnique();
 

@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ClinicApiLearn.Controllers;
 
 [ApiController]
-[Route("api/appointments")]
+[Route(ApiRoutes.Appointments)]
 [Authorize]
 public class AppointmentsController : ControllerBase
 {

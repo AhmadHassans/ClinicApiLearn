@@ -4,6 +4,11 @@ namespace ClinicApiLearn.DTOs;
 
 public class RegisterDto
 {
+
+
+    [Required]
+    public Guid RoleId { get; set; }
+    
     [Required]
     [MaxLength(50)]
     public required string Username { get; set; }
