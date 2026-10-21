@@ -6,5 +6,5 @@ public class PrescriptionDto
 {
     [Required]
     [MaxLength(2000)]
-    public string Prescription { get; set; } = string.Empty;
+    public required string Prescription { get; set; }
 }

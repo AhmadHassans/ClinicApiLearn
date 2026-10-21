@@ -6,15 +6,15 @@ public class RegisterDto
 {
     [Required]
     [MaxLength(50)]
-    public string Username { get; set; } = string.Empty;
+    public required string Username { get; set; }
 
     [Required]
     [EmailAddress]
     [MaxLength(100)]
-    public string Email { get; set; } = string.Empty;
+    public required string Email { get; set; }
 
     [Required]
     [MinLength(8)]
     [MaxLength(100)]
-    public string Password { get; set; } = string.Empty;
+    public required string Password { get; set; }
 }

@@ -6,11 +6,11 @@ public class UpdateAppointmentDto
 {
     [Required]
     [MaxLength(100)]
-    public string PatientName { get; set; } = string.Empty;
+    public required string PatientName { get; set; }
 
     [Required]
     [MaxLength(500)]
-    public string Reason { get; set; } = string.Empty;
+    public required string Reason { get; set; }
 
     [Required]
     public DateTime AppointmentDate { get; set; }

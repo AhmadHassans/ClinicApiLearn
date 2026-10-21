@@ -2,8 +2,8 @@
 
 public class Appointment:BaseEntity
 {
-    public string  PatientName { get; set; }=string.Empty;
-    public string Reason{ get; set; } =string.Empty;
+    public required string PatientName { get; set; }
+    public required string Reason { get; set; }
     public DateTime AppointmentDate { get; set; } 
     public string? Prescription { get; set; }
 

@@ -2,8 +2,8 @@
 
 public class LoginResultDto
 {
-    public UserResponseDto User { get; set; } = null!;
-    public string AccessToken { get; set; } = string.Empty;
+   public required UserResponseDto User { get; set; }
+    public required string AccessToken { get; set; }
 
-    public string RefreshToken { get; set; } = string.Empty;
+    public required string RefreshToken { get; set; }
 }
