@@ -6,6 +6,7 @@ using ClinicApiLearn.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using ClinicApiLearn.Data.Seeds;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -63,6 +64,7 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
+await SuperAdminSeed.SeedAsync(app.Services);
 
 app.UseMiddleware<ClinicApiLearn.Middleware.GlobalExceptionMiddleware>();
 

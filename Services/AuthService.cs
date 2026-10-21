@@ -3,12 +3,12 @@ using ClinicApiLearn.DTOs;
 using ClinicApiLearn.Interfaces;
 using ClinicApiLearn.Models;
 using Microsoft.EntityFrameworkCore;
-
+using ClinicApiLearn.Constants;
 namespace ClinicApiLearn.Services;
 
 public class AuthService : IAuthService
 {
-    private const int DefaultRoleId = 3; // Receptionist
+   private const int DefaultRoleId = RoleIds.Receptionist;
 
     private readonly AppDbContext _context;
     private readonly ITokenService _tokenService;

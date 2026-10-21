@@ -3,6 +3,7 @@ using ClinicApiLearn.DTOs;
 using ClinicApiLearn.Interfaces;
 using ClinicApiLearn.Models;
 using Microsoft.EntityFrameworkCore;
+using ClinicApiLearn.Constants;
 
 namespace ClinicApiLearn.Services;
 
@@ -38,6 +39,15 @@ public class UserService : IUserService
         if (user == null || role == null)
         {
           throw new KeyNotFoundException("User or role not found.");
+        }
+        if (user.RoleId == RoleIds.SuperAdmin)
+        {
+            throw new InvalidOperationException("Super admin role cannot be changed.");
+        }
+
+        if (roleId == RoleIds.SuperAdmin)
+        {
+            throw new InvalidOperationException("Super admin role cannot be assigned.");
         }
 
         user.Role = role;
