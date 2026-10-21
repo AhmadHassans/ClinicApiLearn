@@ -4,7 +4,7 @@ namespace ClinicApiLearn.Interfaces;
 
 public interface IAppointmentService
 {
-    Task<List<AppointmentResponseDto>> GetAllAsync();
+    Task<PagedResult<AppointmentResponseDto>> GetAllAsync(AppointmentQueryDto query);
     Task<AppointmentResponseDto> GetByIdAsync(Guid id);
     Task<AppointmentResponseDto> CreateAsync(CreateAppointmentDto dto,Guid userId);
     Task<AppointmentResponseDto> UpdateAsync(Guid id, UpdateAppointmentDto dto);

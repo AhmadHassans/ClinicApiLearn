@@ -18,15 +18,15 @@ public class AppointmentsController : ControllerBase
     {
         _appointmentService = appointmentService;
     }
+       
 
-    [HttpGet]
-    [Authorize(Policy = PermissionCodes.AppointmentRead)]
-    public async Task<IActionResult> GetAll()
-    {
-        var appointments = await _appointmentService.GetAllAsync();
-        return Ok(appointments);
-    }
-
+        [HttpGet]
+        [Authorize(Policy = PermissionCodes.AppointmentRead)]
+        public async Task<IActionResult> GetAll([FromQuery] AppointmentQueryDto query)
+        {
+            var appointments = await _appointmentService.GetAllAsync(query);
+            return Ok(appointments);
+            }
     [HttpGet("{id:guid}")]
     [Authorize(Policy = PermissionCodes.AppointmentRead)]
     public async Task<IActionResult> GetById(Guid id)
