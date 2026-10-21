@@ -1,8 +1,9 @@
+using System.Security.Claims;
+using ClinicApiLearn.Constants;
 using ClinicApiLearn.DTOs;
 using ClinicApiLearn.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using ClinicApiLearn.Constants;
 
 namespace ClinicApiLearn.Controllers;
 
@@ -11,7 +12,7 @@ namespace ClinicApiLearn.Controllers;
 public class AuthController : ControllerBase
 {
     private const string AccessTokenCookie = "access_token";
-    private const string RefreshTokenCookie = "refresh_token";   
+    private const string RefreshTokenCookie = "refresh_token";
 
     private readonly IAuthService _authService;
     private readonly IConfiguration _config;
@@ -23,7 +24,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("register")]
-     [Authorize(Policy = PermissionCodes.UserManage)] 
+    [Authorize(Policy = PermissionCodes.UserManage)]
     public async Task<IActionResult> Register(RegisterDto dto)
     {
         var user = await _authService.RegisterAsync(dto);
@@ -33,14 +34,11 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login(LoginDto dto)
     {
-       var result = await _authService.LoginAsync(dto, ClientIp(), ClientUserAgent());
-
-       
+        var result = await _authService.LoginAsync(dto, ClientIp(), ClientUserAgent());
         SetAuthCookies(result);
         return Ok(result.User);
     }
 
-  
     [HttpPost("refresh")]
     public async Task<IActionResult> Refresh()
     {
@@ -50,7 +48,7 @@ public class AuthController : ControllerBase
             throw new UnauthorizedAccessException("No refresh token.");
         }
 
-      try
+        try
         {
             var result = await _authService.RefreshAsync(refreshToken, ClientIp(), ClientUserAgent());
             SetAuthCookies(result);
@@ -58,14 +56,12 @@ public class AuthController : ControllerBase
         }
         catch (UnauthorizedAccessException)
         {
-        
+          
             ClearAuthCookies();
             throw;
         }
-    
     }
 
-   
     [HttpPost("logout")]
     public async Task<IActionResult> Logout()
     {
@@ -79,7 +75,34 @@ public class AuthController : ControllerBase
         return NoContent();
     }
 
-   
+  
+    [HttpGet("sessions")]
+    [Authorize]
+    public async Task<IActionResult> GetMySessions()
+    {
+        var sessions = await _authService.GetMySessionsAsync(CurrentUserId(), Request.Cookies[RefreshTokenCookie]);
+        return Ok(sessions);
+    }
+
+    
+    [HttpDelete("sessions/{id:guid}")]
+    [Authorize]
+    public async Task<IActionResult> RevokeSession(Guid id)
+    {
+        await _authService.RevokeSessionAsync(CurrentUserId(), id);
+        return NoContent();
+    }
+
+    
+    [HttpPost("logout-all")]
+    [Authorize]
+    public async Task<IActionResult> LogoutAll()
+    {
+        await _authService.LogoutAllAsync(CurrentUserId());
+        ClearAuthCookies();
+        return NoContent();
+    }
+
     private void SetAuthCookies(LoginResultDto result)
     {
         var minutes = _config.GetValue<int>("Jwt:AccessTokenMinutes");
@@ -92,7 +115,6 @@ public class AuthController : ControllerBase
             BuildCookieOptions(DateTimeOffset.UtcNow.AddDays(days), "/api/auth"));
     }
 
-    
     private void ClearAuthCookies()
     {
         Response.Cookies.Delete(AccessTokenCookie, BuildCookieOptions(null, "/"));
@@ -110,8 +132,13 @@ public class AuthController : ControllerBase
             Path = path
         };
     }
-     private string? ClientIp() => HttpContext.Connection.RemoteIpAddress?.ToString();
 
-   
+    // card  login  user  Id
+    private Guid CurrentUserId() => Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+    // request IP
+    private string? ClientIp() => HttpContext.Connection.RemoteIpAddress?.ToString();
+
+    // request  browser / app
     private string? ClientUserAgent() => Request.Headers.UserAgent.ToString();
 }

@@ -35,7 +35,6 @@ public class AuthService : IAuthService
             throw new InvalidOperationException("Username already taken.");
         }
 
-        // super admin sirf seed se banta hai, koi register se nahi bana sakta
         if (dto.RoleId == RoleIds.SuperAdmin)
         {
             throw new InvalidOperationException("Super admin role cannot be assigned.");
@@ -73,7 +72,6 @@ public class AuthService : IAuthService
             throw new UnauthorizedAccessException("Invalid email or password.");
         }
 
-        // har login = ek naya session
         var refreshToken = _tokenService.CreateRefreshToken();
         var now = DateTime.UtcNow;
 
@@ -96,13 +94,13 @@ public class AuthService : IAuthService
         var hash = _tokenService.HashToken(refreshToken);
         var session = await _context.UserSessions.FirstOrDefaultAsync(s => s.TokenHash == hash);
 
-        // na mila, logout ho chuka, ya expire
+
         if (session == null || session.RevokedAt != null || session.ExpiresAt <= DateTime.UtcNow)
         {
             throw new UnauthorizedAccessException("Session expired. Please login again.");
         }
 
-        // rotation: wahi session, naya token (purana token ab kaam nahi karega)
+
         var newRefreshToken = _tokenService.CreateRefreshToken();
         var now = DateTime.UtcNow;
 
@@ -128,6 +126,63 @@ public class AuthService : IAuthService
             session.RevokedAt = DateTime.UtcNow;
             await _context.SaveChangesAsync();
         }
+    }
+
+    
+    public async Task<List<SessionResponseDto>> GetMySessionsAsync(Guid userId, string? currentRefreshToken)
+    {
+        var currentHash = string.IsNullOrEmpty(currentRefreshToken)
+            ? null
+            : _tokenService.HashToken(currentRefreshToken);
+
+        var now = DateTime.UtcNow;
+
+        return await _context.UserSessions
+            .Where(s => s.UserId == userId && s.RevokedAt == null && s.ExpiresAt > now)
+            .OrderByDescending(s => s.LastUsedAt)
+            .Select(s => new SessionResponseDto
+            {
+                Id = s.Id,
+                IpAddress = s.IpAddress,
+                UserAgent = s.UserAgent,
+                CreatedAt = s.CreatedAt,
+                LastUsedAt = s.LastUsedAt,
+                ExpiresAt = s.ExpiresAt,
+                IsCurrent = s.TokenHash == currentHash
+            })
+            .ToListAsync();
+    }
+
+    //  NAYA: session closed
+    public async Task RevokeSessionAsync(Guid userId, Guid sessionId)
+    {
+        var session = await _context.UserSessions
+            .FirstOrDefaultAsync(s => s.Id == sessionId && s.UserId == userId && s.RevokedAt == null);
+
+        if (session == null)
+        {
+            throw new KeyNotFoundException("Session not found.");
+        }
+
+        session.RevokedAt = DateTime.UtcNow;
+        await _context.SaveChangesAsync();
+    }
+
+    // NAYA:logout 
+    public async Task LogoutAllAsync(Guid userId)
+    {
+        var now = DateTime.UtcNow;
+
+        var sessions = await _context.UserSessions
+            .Where(s => s.UserId == userId && s.RevokedAt == null)
+            .ToListAsync();
+
+        foreach (var session in sessions)
+        {
+            session.RevokedAt = now;
+        }
+
+        await _context.SaveChangesAsync();
     }
 
     private IQueryable<User> UsersWithPermissions()
