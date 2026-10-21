@@ -26,11 +26,11 @@ public class UsersController : ControllerBase
         return Ok(users);
     }
 
-    [HttpPut("{id}/role")]
+    [HttpPut("{id:guid}/role")]
    
-    public async Task<IActionResult> UpdateRole(int id, UpdateUserRoleDto dto)
+    public async Task<IActionResult> UpdateRole(Guid id, UpdateUserRoleDto dto)
     {
-        var currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var currentUserId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         var user = await _userService.UpdateRoleAsync(id, dto.RoleId, currentUserId);
        
 

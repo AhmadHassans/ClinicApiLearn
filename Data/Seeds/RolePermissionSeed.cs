@@ -1,4 +1,5 @@
-﻿using ClinicApiLearn.Models;
+﻿using ClinicApiLearn.Constants;
+using ClinicApiLearn.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClinicApiLearn.Data.Seeds;
@@ -7,28 +8,27 @@ public static class RolePermissionSeed
 {
     public static void Seed(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<RolePermission>().HasData(
-            // Admin: all permissions roles
-            new RolePermission { RoleId = 1, PermissionId = 1 },
-            new RolePermission { RoleId = 1, PermissionId = 2 },
-            new RolePermission { RoleId = 1, PermissionId = 3 },
-            new RolePermission { RoleId = 1, PermissionId = 4 },
-            new RolePermission { RoleId = 1, PermissionId = 5 },
-            new RolePermission { RoleId = 1, PermissionId = 6 },
-            // Doctor: view + write
-            new RolePermission { RoleId = 2, PermissionId = 1 },
-            new RolePermission { RoleId = 2, PermissionId = 5 },
-            // Receptionist: view ,create ,update 
-            new RolePermission { RoleId = 3, PermissionId = 1 },
-            new RolePermission { RoleId = 3, PermissionId = 2 },
-            new RolePermission { RoleId = 3, PermissionId = 3 },
-              // SuperAdmin: sab kuch
-            new RolePermission { RoleId = 4, PermissionId = 1 },
-            new RolePermission { RoleId = 4, PermissionId = 2 },
-            new RolePermission { RoleId = 4, PermissionId = 3 },
-            new RolePermission { RoleId = 4, PermissionId = 4 },
-            new RolePermission { RoleId = 4, PermissionId = 5 },
-            new RolePermission { RoleId = 4, PermissionId = 6 }
-        );
+        var all = new[]
+        {
+            PermissionIds.AppointmentRead, PermissionIds.AppointmentCreate, PermissionIds.AppointmentUpdate,
+            PermissionIds.AppointmentDelete, PermissionIds.PrescriptionWrite, PermissionIds.UserManage
+        };
+
+        var links = new List<RolePermission>();
+
+        // Admin aur SuperAdmin: 
+        links.AddRange(all.Select(p => new RolePermission { RoleId = RoleIds.Admin, PermissionId = p }));
+        links.AddRange(all.Select(p => new RolePermission { RoleId = RoleIds.SuperAdmin, PermissionId = p }));
+
+        // Doctor: view + write. prescription
+        links.Add(new RolePermission { RoleId = RoleIds.Doctor, PermissionId = PermissionIds.AppointmentRead });
+        links.Add(new RolePermission { RoleId = RoleIds.Doctor, PermissionId = PermissionIds.PrescriptionWrite });
+
+        // Receptionist: view, create, update
+        links.Add(new RolePermission { RoleId = RoleIds.Receptionist, PermissionId = PermissionIds.AppointmentRead });
+        links.Add(new RolePermission { RoleId = RoleIds.Receptionist, PermissionId = PermissionIds.AppointmentCreate });
+        links.Add(new RolePermission { RoleId = RoleIds.Receptionist, PermissionId = PermissionIds.AppointmentUpdate });
+
+        modelBuilder.Entity<RolePermission>().HasData(links);
     }
 }

@@ -24,7 +24,7 @@ public class AppointmentService : IAppointmentService
         return appointments.Select(ToDto).ToList();
     }
 
-       public async Task<AppointmentResponseDto> GetByIdAsync(int id)
+       public async Task<AppointmentResponseDto> GetByIdAsync(Guid id)
     {
         var appointment = await _context.Appointments.FindAsync(id);
         if (appointment == null)
@@ -35,7 +35,7 @@ public class AppointmentService : IAppointmentService
         return ToDto(appointment);
     }
 
-    public async Task<AppointmentResponseDto> CreateAsync(CreateAppointmentDto dto, int userId)
+    public async Task<AppointmentResponseDto> CreateAsync(CreateAppointmentDto dto, Guid userId)
     {
         var appointment = new Appointment
         {
@@ -51,7 +51,7 @@ public class AppointmentService : IAppointmentService
         return ToDto(appointment);
     }
 
-    public async Task<AppointmentResponseDto> UpdateAsync(int id, UpdateAppointmentDto dto)
+    public async Task<AppointmentResponseDto> UpdateAsync(Guid id, UpdateAppointmentDto dto)
     {
         var appointment = await _context.Appointments.FindAsync(id);
         if (appointment == null)
@@ -68,7 +68,7 @@ public class AppointmentService : IAppointmentService
         return ToDto(appointment);
     }
 
-    public async Task DeleteAsync(int id)
+    public async Task DeleteAsync(Guid id)
     {
         var appointment = await _context.Appointments.FindAsync(id);
         if (appointment == null)
@@ -83,7 +83,7 @@ public class AppointmentService : IAppointmentService
     }
 
 
-    public async Task<AppointmentResponseDto> WritePrescriptionAsync(int id, string prescription)
+    public async Task<AppointmentResponseDto> WritePrescriptionAsync(Guid id, string prescription)
     {
         var appointment = await _context.Appointments.FindAsync(id);
         if (appointment == null)

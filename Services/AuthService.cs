@@ -8,7 +8,7 @@ namespace ClinicApiLearn.Services;
 
 public class AuthService : IAuthService
 {
-   private const int DefaultRoleId = RoleIds.Receptionist;
+   private static readonly Guid DefaultRoleId = RoleIds.Receptionist;
 
     private readonly AppDbContext _context;
     private readonly ITokenService _tokenService;

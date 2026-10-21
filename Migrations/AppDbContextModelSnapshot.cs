@@ -24,11 +24,9 @@ namespace ClinicApiLearn.Migrations
 
             modelBuilder.Entity("ClinicApiLearn.Models.Appointment", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("AppointmentDate")
                         .HasColumnType("timestamp with time zone");
@@ -36,8 +34,8 @@ namespace ClinicApiLearn.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int?>("CreatedByUserId")
-                        .HasColumnType("integer");
+                    b.Property<Guid?>("CreatedByUserId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("PatientName")
                         .IsRequired()
@@ -62,11 +60,9 @@ namespace ClinicApiLearn.Migrations
 
             modelBuilder.Entity("ClinicApiLearn.Models.Permission", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Code")
                         .IsRequired()
@@ -92,42 +88,42 @@ namespace ClinicApiLearn.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 1,
+                            Id = new Guid("8af052af-0483-4c7b-9686-ec75abc36d8c"),
                             Code = "Appointment.Read",
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "View Appointments"
                         },
                         new
                         {
-                            Id = 2,
+                            Id = new Guid("cbe4c8d7-7a27-45aa-a2de-304dc0555375"),
                             Code = "Appointment.Create",
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Create Appointment"
                         },
                         new
                         {
-                            Id = 3,
+                            Id = new Guid("f76bc9aa-b82c-47b9-8d24-268681967427"),
                             Code = "Appointment.Update",
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Update Appointment"
                         },
                         new
                         {
-                            Id = 4,
+                            Id = new Guid("44314cba-01a9-432a-abca-2dbb0fa300a0"),
                             Code = "Appointment.Delete",
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Delete Appointment"
                         },
                         new
                         {
-                            Id = 5,
+                            Id = new Guid("6de2406a-df86-4402-a0e9-89901febf595"),
                             Code = "Prescription.Write",
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Write Prescription"
                         },
                         new
                         {
-                            Id = 6,
+                            Id = new Guid("45e38124-5d0b-4e76-9bc1-f4d5c412789c"),
                             Code = "User.Manage",
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Manage Users"
@@ -136,11 +132,9 @@ namespace ClinicApiLearn.Migrations
 
             modelBuilder.Entity("ClinicApiLearn.Models.RefreshToken", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -158,8 +152,8 @@ namespace ClinicApiLearn.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
@@ -170,11 +164,9 @@ namespace ClinicApiLearn.Migrations
 
             modelBuilder.Entity("ClinicApiLearn.Models.Role", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -193,25 +185,25 @@ namespace ClinicApiLearn.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 1,
+                            Id = new Guid("b70eaa30-8918-45b3-a7c3-8734fb222056"),
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Admin"
                         },
                         new
                         {
-                            Id = 2,
+                            Id = new Guid("24373e69-d0cd-4806-a02c-3f03272963c1"),
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Doctor"
                         },
                         new
                         {
-                            Id = 3,
+                            Id = new Guid("2b876836-9b5a-4658-90f9-e8fe258ac3aa"),
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Receptionist"
                         },
                         new
                         {
-                            Id = 4,
+                            Id = new Guid("4443e5b0-6cad-4e14-9448-f7c0836df9bd"),
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "SuperAdmin"
                         });
@@ -219,11 +211,11 @@ namespace ClinicApiLearn.Migrations
 
             modelBuilder.Entity("ClinicApiLearn.Models.RolePermission", b =>
                 {
-                    b.Property<int>("RoleId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uuid");
 
-                    b.Property<int>("PermissionId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("PermissionId")
+                        .HasColumnType("uuid");
 
                     b.HasKey("RoleId", "PermissionId");
 
@@ -234,98 +226,96 @@ namespace ClinicApiLearn.Migrations
                     b.HasData(
                         new
                         {
-                            RoleId = 1,
-                            PermissionId = 1
+                            RoleId = new Guid("b70eaa30-8918-45b3-a7c3-8734fb222056"),
+                            PermissionId = new Guid("8af052af-0483-4c7b-9686-ec75abc36d8c")
                         },
                         new
                         {
-                            RoleId = 1,
-                            PermissionId = 2
+                            RoleId = new Guid("b70eaa30-8918-45b3-a7c3-8734fb222056"),
+                            PermissionId = new Guid("cbe4c8d7-7a27-45aa-a2de-304dc0555375")
                         },
                         new
                         {
-                            RoleId = 1,
-                            PermissionId = 3
+                            RoleId = new Guid("b70eaa30-8918-45b3-a7c3-8734fb222056"),
+                            PermissionId = new Guid("f76bc9aa-b82c-47b9-8d24-268681967427")
                         },
                         new
                         {
-                            RoleId = 1,
-                            PermissionId = 4
+                            RoleId = new Guid("b70eaa30-8918-45b3-a7c3-8734fb222056"),
+                            PermissionId = new Guid("44314cba-01a9-432a-abca-2dbb0fa300a0")
                         },
                         new
                         {
-                            RoleId = 1,
-                            PermissionId = 5
+                            RoleId = new Guid("b70eaa30-8918-45b3-a7c3-8734fb222056"),
+                            PermissionId = new Guid("6de2406a-df86-4402-a0e9-89901febf595")
                         },
                         new
                         {
-                            RoleId = 1,
-                            PermissionId = 6
+                            RoleId = new Guid("b70eaa30-8918-45b3-a7c3-8734fb222056"),
+                            PermissionId = new Guid("45e38124-5d0b-4e76-9bc1-f4d5c412789c")
                         },
                         new
                         {
-                            RoleId = 2,
-                            PermissionId = 1
+                            RoleId = new Guid("4443e5b0-6cad-4e14-9448-f7c0836df9bd"),
+                            PermissionId = new Guid("8af052af-0483-4c7b-9686-ec75abc36d8c")
                         },
                         new
                         {
-                            RoleId = 2,
-                            PermissionId = 5
+                            RoleId = new Guid("4443e5b0-6cad-4e14-9448-f7c0836df9bd"),
+                            PermissionId = new Guid("cbe4c8d7-7a27-45aa-a2de-304dc0555375")
                         },
                         new
                         {
-                            RoleId = 3,
-                            PermissionId = 1
+                            RoleId = new Guid("4443e5b0-6cad-4e14-9448-f7c0836df9bd"),
+                            PermissionId = new Guid("f76bc9aa-b82c-47b9-8d24-268681967427")
                         },
                         new
                         {
-                            RoleId = 3,
-                            PermissionId = 2
+                            RoleId = new Guid("4443e5b0-6cad-4e14-9448-f7c0836df9bd"),
+                            PermissionId = new Guid("44314cba-01a9-432a-abca-2dbb0fa300a0")
                         },
                         new
                         {
-                            RoleId = 3,
-                            PermissionId = 3
+                            RoleId = new Guid("4443e5b0-6cad-4e14-9448-f7c0836df9bd"),
+                            PermissionId = new Guid("6de2406a-df86-4402-a0e9-89901febf595")
                         },
                         new
                         {
-                            RoleId = 4,
-                            PermissionId = 1
+                            RoleId = new Guid("4443e5b0-6cad-4e14-9448-f7c0836df9bd"),
+                            PermissionId = new Guid("45e38124-5d0b-4e76-9bc1-f4d5c412789c")
                         },
                         new
                         {
-                            RoleId = 4,
-                            PermissionId = 2
+                            RoleId = new Guid("24373e69-d0cd-4806-a02c-3f03272963c1"),
+                            PermissionId = new Guid("8af052af-0483-4c7b-9686-ec75abc36d8c")
                         },
                         new
                         {
-                            RoleId = 4,
-                            PermissionId = 3
+                            RoleId = new Guid("24373e69-d0cd-4806-a02c-3f03272963c1"),
+                            PermissionId = new Guid("6de2406a-df86-4402-a0e9-89901febf595")
                         },
                         new
                         {
-                            RoleId = 4,
-                            PermissionId = 4
+                            RoleId = new Guid("2b876836-9b5a-4658-90f9-e8fe258ac3aa"),
+                            PermissionId = new Guid("8af052af-0483-4c7b-9686-ec75abc36d8c")
                         },
                         new
                         {
-                            RoleId = 4,
-                            PermissionId = 5
+                            RoleId = new Guid("2b876836-9b5a-4658-90f9-e8fe258ac3aa"),
+                            PermissionId = new Guid("cbe4c8d7-7a27-45aa-a2de-304dc0555375")
                         },
                         new
                         {
-                            RoleId = 4,
-                            PermissionId = 6
+                            RoleId = new Guid("2b876836-9b5a-4658-90f9-e8fe258ac3aa"),
+                            PermissionId = new Guid("f76bc9aa-b82c-47b9-8d24-268681967427")
                         });
                 });
 
             modelBuilder.Entity("ClinicApiLearn.Models.User", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -338,8 +328,8 @@ namespace ClinicApiLearn.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("RoleId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");

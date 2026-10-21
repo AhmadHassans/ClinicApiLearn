@@ -2,7 +2,7 @@
 
 public class AppointmentResponseDto
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
     public required string PatientName { get; set; }
     public required string Reason { get; set; }
     public DateTime AppointmentDate { get; set; }

@@ -1,4 +1,5 @@
-﻿using ClinicApiLearn.Models;
+﻿using ClinicApiLearn.Constants;
+using ClinicApiLearn.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClinicApiLearn.Data.Seeds;
@@ -10,12 +11,12 @@ public static class PermissionSeed
         var date = SeedConstants.SeedDate;
 
         modelBuilder.Entity<Permission>().HasData(
-            new Permission { Id = 1, Name = "View Appointments", Code = "Appointment.Read", CreatedAt = date },
-            new Permission { Id = 2, Name = "Create Appointment", Code = "Appointment.Create", CreatedAt = date },
-            new Permission { Id = 3, Name = "Update Appointment", Code = "Appointment.Update", CreatedAt = date },
-            new Permission { Id = 4, Name = "Delete Appointment", Code = "Appointment.Delete", CreatedAt = date },
-            new Permission { Id = 5, Name = "Write Prescription", Code = "Prescription.Write", CreatedAt = date },
-            new Permission { Id = 6, Name = "Manage Users", Code = "User.Manage", CreatedAt = date }
+            new Permission { Id = PermissionIds.AppointmentRead, Name = "View Appointments", Code = PermissionCodes.AppointmentRead, CreatedAt = date },
+            new Permission { Id = PermissionIds.AppointmentCreate, Name = "Create Appointment", Code = PermissionCodes.AppointmentCreate, CreatedAt = date },
+            new Permission { Id = PermissionIds.AppointmentUpdate, Name = "Update Appointment", Code = PermissionCodes.AppointmentUpdate, CreatedAt = date },
+            new Permission { Id = PermissionIds.AppointmentDelete, Name = "Delete Appointment", Code = PermissionCodes.AppointmentDelete, CreatedAt = date },
+            new Permission { Id = PermissionIds.PrescriptionWrite, Name = "Write Prescription", Code = PermissionCodes.PrescriptionWrite, CreatedAt = date },
+            new Permission { Id = PermissionIds.UserManage, Name = "Manage Users", Code = PermissionCodes.UserManage, CreatedAt = date }
         );
     }
 }

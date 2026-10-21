@@ -7,6 +7,6 @@ public class Appointment:BaseEntity
     public DateTime AppointmentDate { get; set; } 
     public string? Prescription { get; set; }
 
-    public int? CreatedByUserId { get; set; }
+    public Guid? CreatedByUserId { get; set; }
     public User? CreatedByUser { get; set; }
 }

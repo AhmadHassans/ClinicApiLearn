@@ -5,5 +5,5 @@ namespace ClinicApiLearn.DTOs;
 public class UpdateUserRoleDto
 {
     [Required]
-    public int RoleId { get; set; }
+    public Guid RoleId { get; set; }
 }

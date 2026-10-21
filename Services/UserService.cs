@@ -27,7 +27,7 @@ public class UserService : IUserService
         return users.Select(ToDto).ToList();
     }
 
-    public async Task<UserResponseDto> UpdateRoleAsync(int userId, int roleId,int currentUserId)
+    public async Task<UserResponseDto> UpdateRoleAsync(Guid userId, Guid roleId,Guid currentUserId)
     {
           if (userId == currentUserId)
         {
