@@ -21,13 +21,13 @@ public class AuthService : IAuthService
         _config = config;
     }
 
-    public async Task<UserResponseDto?> RegisterAsync(RegisterDto dto)
+    public async Task<UserResponseDto> RegisterAsync(RegisterDto dto)
     {
         var email = dto.Email.Trim().ToLowerInvariant();
 
         if (await _context.Users.AnyAsync(u => u.Email == email))
         {
-            return null;
+           throw new InvalidOperationException("Email already registered.");
         }
 
         var role = await _context.Roles.FindAsync(DefaultRoleId);
@@ -46,7 +46,7 @@ public class AuthService : IAuthService
         return ToDto(user);
     }
 
-    public async Task<LoginResultDto?> LoginAsync(LoginDto dto)
+    public async Task<LoginResultDto> LoginAsync(LoginDto dto)
     {
         var email = dto.Email.Trim().ToLowerInvariant();
 
@@ -55,14 +55,14 @@ public class AuthService : IAuthService
 
         if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
         {
-            return null;
+          throw new UnauthorizedAccessException("Invalid email or password.");
         }
 
         return await IssueTokensAsync(user);
     }
 
   
-    public async Task<LoginResultDto?> RefreshAsync(string refreshToken)
+    public async Task<LoginResultDto> RefreshAsync(string refreshToken)
     {
         var hash = _tokenService.HashToken(refreshToken);
         var stored = await _context.RefreshTokens.FirstOrDefaultAsync(t => t.TokenHash == hash);
@@ -70,7 +70,7 @@ public class AuthService : IAuthService
         // expired
         if (stored == null || stored.RevokedAt != null || stored.ExpiresAt <= DateTime.UtcNow)
         {
-            return null;
+            throw new UnauthorizedAccessException("Session expired. Please login again.");
         }
 
    

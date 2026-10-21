@@ -1,6 +1,4 @@
-﻿using ClinicApiLearn.Exceptions;
-
-namespace ClinicApiLearn.Middleware;
+﻿namespace ClinicApiLearn.Middleware;
 
 public class GlobalExceptionMiddleware
 {
@@ -19,18 +17,28 @@ public class GlobalExceptionMiddleware
         {
             await _next(context);
         }
-        catch (BusinessRuleException ex)
+        catch (KeyNotFoundException ex)
         {
-            // jaan boojh kar phenka gaya rule: client ko asli message dikhao
-            context.Response.StatusCode = StatusCodes.Status400BadRequest;
-            await context.Response.WriteAsJsonAsync(new { message = ex.Message });
+            await WriteError(context, StatusCodes.Status404NotFound, ex.Message);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            await WriteError(context, StatusCodes.Status401Unauthorized, ex.Message);
+        }
+        catch (InvalidOperationException ex)
+        {
+            await WriteError(context, StatusCodes.Status400BadRequest, ex.Message);
         }
         catch (Exception ex)
         {
-            // anjaana error: tafseel sirf log mein, client ko aam message
             _logger.LogError(ex, "Unhandled exception on {Path}", context.Request.Path);
-            context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-            await context.Response.WriteAsJsonAsync(new { message = "Something went wrong." });
+            await WriteError(context, StatusCodes.Status500InternalServerError, "Something went wrong.");
         }
+    }
+
+    private static async Task WriteError(HttpContext context, int statusCode, string message)
+    {
+        context.Response.StatusCode = statusCode;
+        await context.Response.WriteAsJsonAsync(new { message });
     }
 }

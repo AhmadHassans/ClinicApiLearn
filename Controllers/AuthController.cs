@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ClinicApiLearn.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/auth")]
 public class AuthController : ControllerBase
 {
     private const string AccessTokenCookie = "access_token";
@@ -24,11 +24,6 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> Register(RegisterDto dto)
     {
         var user = await _authService.RegisterAsync(dto);
-        if (user == null)
-        {
-            return Conflict(new { message = "Email already registered." });
-        }
-
         return Ok(user);
     }
 
@@ -36,11 +31,7 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> Login(LoginDto dto)
     {
         var result = await _authService.LoginAsync(dto);
-        if (result == null)
-        {
-            return Unauthorized(new { message = "Invalid email or password." });
-        }
-
+       
         SetAuthCookies(result);
         return Ok(result.User);
     }
@@ -52,18 +43,22 @@ public class AuthController : ControllerBase
         var refreshToken = Request.Cookies[RefreshTokenCookie];
         if (string.IsNullOrEmpty(refreshToken))
         {
-            return Unauthorized(new { message = "No refresh token." });
+            throw new UnauthorizedAccessException("No refresh token.");
         }
 
-        var result = await _authService.RefreshAsync(refreshToken);
-        if (result == null)
+      try
         {
-            ClearAuthCookies();
-            return Unauthorized(new { message = "Session expired. Please login again." });
+            var result = await _authService.RefreshAsync(refreshToken);
+            SetAuthCookies(result);
+            return Ok(result.User);
         }
-
-        SetAuthCookies(result);
-        return Ok(result.User);
+        catch (UnauthorizedAccessException)
+        {
+        
+            ClearAuthCookies();
+            throw;
+        }
+    
     }
 
    

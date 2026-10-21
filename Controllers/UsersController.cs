@@ -8,7 +8,7 @@ using System.Security.Claims;
 namespace ClinicApiLearn.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/users")]
 [Authorize(Policy = PermissionCodes.UserManage)]
 public class UsersController : ControllerBase
 {
@@ -32,10 +32,7 @@ public class UsersController : ControllerBase
     {
         var currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         var user = await _userService.UpdateRoleAsync(id, dto.RoleId, currentUserId);
-        if (user == null)
-        {
-            return NotFound(new { message = "User or role not found." });
-        }
+       
 
         return Ok(user);
     }

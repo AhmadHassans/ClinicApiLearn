@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ClinicApiLearn.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/appointments")]
 [Authorize]
 public class AppointmentsController : ControllerBase
 {
@@ -32,10 +32,7 @@ public class AppointmentsController : ControllerBase
     public async Task<IActionResult> GetById(int id)
     {
         var appointment = await _appointmentService.GetByIdAsync(id);
-        if (appointment == null)
-        {
-            return NotFound();
-        }
+       
 
         return Ok(appointment);
     }
@@ -55,10 +52,7 @@ public class AppointmentsController : ControllerBase
     public async Task<IActionResult> Update(int id, UpdateAppointmentDto dto)
     {
         var appointment = await _appointmentService.UpdateAsync(id, dto);
-        if (appointment == null)
-        {
-            return NotFound();
-        }
+       
 
         return Ok(appointment);
     }
@@ -67,11 +61,8 @@ public class AppointmentsController : ControllerBase
     [Authorize(Policy = PermissionCodes.AppointmentDelete)]
     public async Task<IActionResult> Delete(int id)
     {
-        var deleted = await _appointmentService.DeleteAsync(id);
-        if (!deleted)
-        {
-            return NotFound();
-        }
+         await _appointmentService.DeleteAsync(id);
+       
 
         return NoContent();
     }
@@ -81,10 +72,7 @@ public class AppointmentsController : ControllerBase
     public async Task<IActionResult> WritePrescription(int id, PrescriptionDto dto)
     {
         var appointment = await _appointmentService.WritePrescriptionAsync(id, dto.Prescription);
-        if (appointment == null)
-        {
-            return NotFound();
-        }
+       
 
         return Ok(appointment);
     }

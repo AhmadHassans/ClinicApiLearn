@@ -24,11 +24,15 @@ public class AppointmentService : IAppointmentService
         return appointments.Select(ToDto).ToList();
     }
 
-    public async Task<AppointmentResponseDto?> GetByIdAsync(int id)
+       public async Task<AppointmentResponseDto> GetByIdAsync(int id)
     {
         var appointment = await _context.Appointments.FindAsync(id);
+        if (appointment == null)
+        {
+            throw new KeyNotFoundException("Appointment not found.");
+        }
 
-        return appointment == null ? null : ToDto(appointment);
+        return ToDto(appointment);
     }
 
     public async Task<AppointmentResponseDto> CreateAsync(CreateAppointmentDto dto, int userId)
@@ -38,7 +42,7 @@ public class AppointmentService : IAppointmentService
             PatientName = dto.PatientName,
             Reason = dto.Reason,
             AppointmentDate = dto.AppointmentDate.ToUniversalTime(),
-            CreatedByUserId = userId   
+            CreatedByUserId = userId
         };
 
         _context.Appointments.Add(appointment);
@@ -47,12 +51,12 @@ public class AppointmentService : IAppointmentService
         return ToDto(appointment);
     }
 
-    public async Task<AppointmentResponseDto?> UpdateAsync(int id, UpdateAppointmentDto dto)
+    public async Task<AppointmentResponseDto> UpdateAsync(int id, UpdateAppointmentDto dto)
     {
         var appointment = await _context.Appointments.FindAsync(id);
         if (appointment == null)
         {
-            return null;
+         throw new KeyNotFoundException("Appointment not found.");
         }
 
         appointment.PatientName = dto.PatientName;
@@ -64,29 +68,28 @@ public class AppointmentService : IAppointmentService
         return ToDto(appointment);
     }
 
-    public async Task<bool> DeleteAsync(int id)
+    public async Task DeleteAsync(int id)
     {
         var appointment = await _context.Appointments.FindAsync(id);
         if (appointment == null)
         {
-            return false;
+           throw new KeyNotFoundException("Appointment not found.");
         }
 
         _context.Appointments.Remove(appointment);
         await _context.SaveChangesAsync();
 
-        return true;
+        
     }
 
-   
-    public async Task<AppointmentResponseDto?> WritePrescriptionAsync(int id, string prescription)
+
+    public async Task<AppointmentResponseDto> WritePrescriptionAsync(int id, string prescription)
     {
         var appointment = await _context.Appointments.FindAsync(id);
         if (appointment == null)
         {
-            return null;
+            throw new KeyNotFoundException("Appointment not found.");
         }
-
         appointment.Prescription = prescription;
         await _context.SaveChangesAsync();
 
