@@ -76,8 +76,13 @@ app.UseMiddleware<ClinicApiLearn.Middleware.GlobalExceptionMiddleware>();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
-}
 
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/openapi/v1.json", "Clinic API v1");
+        options.RoutePrefix = "swagger";
+    });
+}
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
