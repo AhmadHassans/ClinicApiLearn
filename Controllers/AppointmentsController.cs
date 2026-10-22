@@ -18,22 +18,31 @@ public class AppointmentsController : ControllerBase
     {
         _appointmentService = appointmentService;
     }
-       
 
-        [HttpGet]
-        [Authorize(Policy = PermissionCodes.AppointmentRead)]
-        public async Task<IActionResult> GetAll([FromQuery] AppointmentQueryDto query)
-        {
-            var appointments = await _appointmentService.GetAllAsync(query);
-            return Ok(appointments);
-            }
+
+    [HttpPut("{id:guid}/status")]
+    [Authorize(Policy = PermissionCodes.AppointmentUpdate)]
+    public async Task<IActionResult> UpdateStatus(Guid id, UpdateAppointmentStatusDto dto)
+    {
+        var appointment = await _appointmentService.UpdateStatusAsync(id, dto.Status);
+        return Ok(appointment);
+    }
+
+
+    [HttpGet]
+    [Authorize(Policy = PermissionCodes.AppointmentRead)]
+    public async Task<IActionResult> GetAll([FromQuery] AppointmentQueryDto query)
+    {
+        var appointments = await _appointmentService.GetAllAsync(query);
+        return Ok(appointments);
+    }
+
+
     [HttpGet("{id:guid}")]
     [Authorize(Policy = PermissionCodes.AppointmentRead)]
     public async Task<IActionResult> GetById(Guid id)
     {
         var appointment = await _appointmentService.GetByIdAsync(id);
-       
-
         return Ok(appointment);
     }
 
@@ -52,7 +61,7 @@ public class AppointmentsController : ControllerBase
     public async Task<IActionResult> Update(Guid id, UpdateAppointmentDto dto)
     {
         var appointment = await _appointmentService.UpdateAsync(id, dto);
-       
+
 
         return Ok(appointment);
     }
@@ -61,8 +70,8 @@ public class AppointmentsController : ControllerBase
     [Authorize(Policy = PermissionCodes.AppointmentDelete)]
     public async Task<IActionResult> Delete(Guid id)
     {
-         await _appointmentService.DeleteAsync(id);
-       
+        await _appointmentService.DeleteAsync(id);
+
 
         return NoContent();
     }
@@ -72,7 +81,7 @@ public class AppointmentsController : ControllerBase
     public async Task<IActionResult> WritePrescription(Guid id, PrescriptionDto dto)
     {
         var appointment = await _appointmentService.WritePrescriptionAsync(id, dto.Prescription);
-       
+
 
         return Ok(appointment);
     }

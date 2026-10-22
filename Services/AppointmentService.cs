@@ -40,8 +40,13 @@ public class AppointmentService : IAppointmentService
                 ? appointments.Where(a => a.Prescription != null)
                 : appointments.Where(a => a.Prescription == null);
         }
+        // STATUS
+           if (query.Status != null)
+        {
+            appointments = appointments.Where(a => a.Status == query.Status);
+        }
 
-        // 2. SEARCH (naam ya reason mein, chhote bade harf ka farq nahi)
+        // 2. SEARCH 
         if (!string.IsNullOrWhiteSpace(query.Search))
         {
             var pattern = $"%{query.Search.Trim()}%";
@@ -50,7 +55,7 @@ public class AppointmentService : IAppointmentService
                 EF.Functions.ILike(a.Reason, pattern));
         }
 
-        // 3. COUNT (page kaatne se PEHLE)
+        // 3. COUNT 
         var totalCount = await appointments.CountAsync();
 
         // 4. SORT
@@ -69,7 +74,7 @@ public class AppointmentService : IAppointmentService
                 : appointments.OrderBy(a => a.CreatedAt)
         };
 
-        // 5. PAGINATE + sirf zaroori columns
+        // 5. PAGINATE 
         var items = await appointments
             .Skip((query.Page - 1) * query.PageSize)
             .Take(query.PageSize)
@@ -80,6 +85,7 @@ public class AppointmentService : IAppointmentService
                 Reason = a.Reason,
                 AppointmentDate = a.AppointmentDate,
                 Prescription = a.Prescription,
+                Status = a.Status,
                 CreatedAt = a.CreatedAt,
                 UpdatedAt = a.UpdatedAt
             })
@@ -164,6 +170,29 @@ public class AppointmentService : IAppointmentService
         return ToDto(appointment);
     }
 
+    public async Task<AppointmentResponseDto> UpdateStatusAsync(Guid id, AppointmentStatus status)
+    {
+        var appointment = await _context.Appointments.FindAsync(id);
+        if (appointment == null)
+        {
+            throw new KeyNotFoundException("Appointment not found.");
+        }
+
+       
+        if (appointment.Status == AppointmentStatus.Cancelled)
+        {
+            throw new InvalidOperationException("Cancelled appointment status cannot be changed.");
+        }
+
+        appointment.Status = status;
+        await _context.SaveChangesAsync();
+
+        return ToDto(appointment);
+    }
+
+
+
+
     private static AppointmentResponseDto ToDto(Appointment a)
     {
         return new AppointmentResponseDto
@@ -173,6 +202,7 @@ public class AppointmentService : IAppointmentService
             Reason = a.Reason,
             AppointmentDate = a.AppointmentDate,
             Prescription = a.Prescription,
+            Status = a.Status,
             CreatedAt = a.CreatedAt,
             UpdatedAt = a.UpdatedAt
         };

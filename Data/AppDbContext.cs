@@ -21,9 +21,16 @@ public class AppDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-    
+
+
+
+
         modelBuilder.Entity<RolePermission>()
             .HasKey(rp => new { rp.RoleId, rp.PermissionId });
+
+
+        modelBuilder.Entity<Appointment>()
+     .HasIndex(a => a.Status);
 
 
         modelBuilder.Entity<User>()
@@ -36,22 +43,22 @@ public class AppDbContext : DbContext
             .IsUnique();
 
 
-        // username bhi sirf ek dafa
+
         modelBuilder.Entity<User>()
             .HasIndex(u => u.Username)
             .IsUnique();
 
-      
+
         modelBuilder.Entity<Role>()
             .HasIndex(r => r.Name)
             .IsUnique();
 
-       
+
         modelBuilder.Entity<UserSession>()
             .HasIndex(t => t.TokenHash)
             .IsUnique();
 
-        
+
         modelBuilder.Entity<Appointment>()
             .HasIndex(a => a.AppointmentDate);
 
@@ -67,7 +74,7 @@ public class AppDbContext : DbContext
             .HasForeignKey(a => a.CreatedByUserId)
             .OnDelete(DeleteBehavior.SetNull);
 
-      
+
         RoleSeed.Seed(modelBuilder);
         PermissionSeed.Seed(modelBuilder);
         RolePermissionSeed.Seed(modelBuilder);

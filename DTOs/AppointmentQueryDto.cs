@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using ClinicApiLearn.Models;
 
 namespace ClinicApiLearn.DTOs;
 
@@ -19,6 +20,7 @@ public class AppointmentQueryDto
     public DateTime? FromDate { get; set; }
     public DateTime? ToDate { get; set; }
     public bool? HasPrescription { get; set; }
+    public AppointmentStatus? Status { get; set; }
 
     // sorting: createdAt | date | patientName
     public string SortBy { get; set; } = "createdAt";

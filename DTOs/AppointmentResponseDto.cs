@@ -1,4 +1,8 @@
-﻿namespace ClinicApiLearn.DTOs;
+﻿
+using ClinicApiLearn.Models;
+using ClinicApiLearn.Models;
+namespace ClinicApiLearn.DTOs;
+
 
 public class AppointmentResponseDto
 {
@@ -9,4 +13,7 @@ public class AppointmentResponseDto
     public string? Prescription { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
+    public AppointmentStatus Status { get; set; }
+
+   
 }

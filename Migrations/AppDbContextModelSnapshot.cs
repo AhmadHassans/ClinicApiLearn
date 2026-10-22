@@ -48,6 +48,9 @@ namespace ClinicApiLearn.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -56,6 +59,8 @@ namespace ClinicApiLearn.Migrations
                     b.HasIndex("AppointmentDate");
 
                     b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("Status");
 
                     b.ToTable("Appointments");
                 });
