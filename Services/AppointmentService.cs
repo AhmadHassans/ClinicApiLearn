@@ -156,7 +156,7 @@ public class AppointmentService : IAppointmentService
         await _context.SaveChangesAsync();
     }
 
-    public async Task<AppointmentResponseDto> WritePrescriptionAsync(Guid id, string prescription)
+   public async Task<AppointmentResponseDto> WritePrescriptionAsync(Guid id, string prescription)
     {
         var appointment = await _context.Appointments.FindAsync(id);
         if (appointment == null)
@@ -164,7 +164,17 @@ public class AppointmentService : IAppointmentService
             throw new KeyNotFoundException("Appointment not found.");
         }
 
+        // patient status cancel 
+        if (appointment.Status == AppointmentStatus.Cancelled)
+        {
+            throw new InvalidOperationException("Cannot write prescription for a cancelled appointment.");
+        }
+
         appointment.Prescription = prescription;
+
+        // patient status complete
+        appointment.Status = AppointmentStatus.Completed;
+
         await _context.SaveChangesAsync();
 
         return ToDto(appointment);
